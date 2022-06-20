@@ -1,0 +1,94 @@
+.title {
+    width: 98%;
+    text-align: center;
+    border: 1px solid black;
+    margin-left: 1%;
+}
+
+.chartGroup {
+    float: left;
+    margin-left: 1%;
+    width: 80%;
+    margin-top: 1%;
+}
+
+.cardGroup {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card {
+    border: 1px solid black;
+    width: 24%;
+    height: 100%;
+    float: left;
+    text-align: center;
+    padding-top: 1%;
+}
+
+.dataCard {
+    padding-top: 3%;
+    font-size: x-large;
+    font-style: italic;
+
+}
+
+.chartLayer {
+    border:1px solid black;
+    width: 100%;
+    height: 550px;
+}
+
+.titleChart {
+    text-align: center;
+    padding-top: 1%;
+}
+
+.chart {
+    border: 1px solid black;
+    width: 100%;
+    height: 495px;
+}
+
+.filter {
+    float: right;
+    height: 720px;
+    width: 17%;
+    /* border: 1px solid black; */
+    margin-top: 1%;
+    margin-right: 1%;
+}
+
+.filterCategory {
+    width: 100%;
+    height: 200px;
+}
+
+.titleCategory {
+    text-align: center;
+    padding: 5%;
+    border: 1px solid black;
+}
+
+.checksCategory {
+    text-align: center;
+    justify-content: center;
+    padding: 5%;
+    border: 1px solid black;
+}
+
+.filterCountry {
+    border: 1px solid black;
+    height: 150px;
+}
+
+.titleCountry {
+    text-align: center;
+    padding: 5%;
+    border: 1px solid black;
+}
+
+
+
