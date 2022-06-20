@@ -190,13 +190,13 @@ selectCountry
 
 selectCountry.on("change", (e) => {
     e.preventDefault()
-    // console.log(e.target.value, selectCountry.node().value)
-    getAvgInflation(selectCountry.node().value)
+    console.log(selectCountry.node().value)
+    // getAvgInflation(selectCountry.node().value)
 })
 
 checksCategory.selectAll('div.form-check').on("change", (e) => {
     e.preventDefault()
-    // console.log(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+    console.log(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 })
 
 }
