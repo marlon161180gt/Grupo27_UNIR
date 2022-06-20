@@ -126,6 +126,8 @@ const titleCategory = filterCategory
 const checksCategory = filterCategory
     .append('div')
     .attr('class', 'checksCategory')
+    // .append('div')
+    // .attr('class', 'form-check')
 
 const filterCountry = filter
     .append('div')
@@ -164,17 +166,17 @@ const load = async () => {
 const distinctCountry = [... new Set(data.map((d) => d.Country))]
 const distinctCategory = [... new Set(data.map((d) => d.Category))]
 
-console.log(distinctCategory)
+// console.log(distinctCategory)
 
 checksCategory
-    .selectAll('div')
+    .selectAll('input')
     .data(distinctCategory)
     .enter()
     .append('div')
     .attr('class', 'form-check')
     .html(r => `
-    <input class="form-check-input" type="radio" name="Country" value=${r}>
-    <label class"form-check-label">${r}`)
+    <input class="form-check-input" type="radio" name="Country" value="${r}">
+    <label class="form-check-label">${r}`)
 
 selectCountry
     .selectAll('option')
@@ -188,9 +190,14 @@ selectCountry
 
 selectCountry.on("change", (e) => {
     e.preventDefault()
-    console.log(e.target.value, selectCountry.node().value)
+    // console.log(e.target.value, selectCountry.node().value)
+    getAvgInflation(selectCountry.node().value)
 })
 
+checksCategory.selectAll('div.form-check').on("change", (e) => {
+    e.preventDefault()
+    // console.log(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+})
 
 }
 
