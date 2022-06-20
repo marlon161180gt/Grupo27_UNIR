@@ -17,7 +17,7 @@ const title = layout
     .append('div')
     .attr('class', 'title')
     .append('h2')
-    .text('Nombre del analisis')
+    .text('Analiisis Inflacionario Global')
 
 // Layer for cards and chart
     const chartGroup = layout
