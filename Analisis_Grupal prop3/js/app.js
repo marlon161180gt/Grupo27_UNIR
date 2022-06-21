@@ -59,7 +59,7 @@ const valueCard2 = card2
     .append('div')
     .append('p')
     .attr('class', 'dataCard')
-    .text('Food')
+    // .text('Food')
 
 const card3 = cardGroup
     .append('div')
@@ -74,7 +74,7 @@ const valueCard3 = card3
     .append('div')
     .append('p')
     .attr('class', 'dataCard')
-    .text('10.58%')    
+    // .text('10.58%')    
 
 const card4 = cardGroup
     .append('div')
@@ -166,7 +166,52 @@ const load = async () => {
 const distinctCountry = [... new Set(data.map((d) => d.Country))]
 const distinctCategory = [... new Set(data.map((d) => d.Category))]
 
-// console.log(distinctCategory)
+const getAvgInflation = (country, category) => {
+
+    if (country !== undefined && category !== undefined) {
+        var newArray = data.filter(function (a){
+            return a.Country == country &&
+                a.Category == category
+        })
+        
+        // console.log(newArray)
+        const sumInflation = newArray.reduce((acc, value) => acc + value[2021], 0)
+        const avgInflation = sumInflation / newArray.length
+    
+        valueCard3.text(avgInflation.toFixed(2) + "%")
+    }
+    else {
+        if(country !== undefined && category === undefined){
+            var newArray = data.filter(function (a){
+                return a.Country == country
+            })
+            const sumInflation = newArray.reduce((acc, value) => acc + value[2021], 0)
+            const avgInflation = sumInflation / newArray.length
+
+            valueCard3.text(avgInflation.toFixed(2) + "%")
+        }
+        else{
+            if(country === undefined && category !== undefined){
+                var newArray = data.filter(function (a){
+                    return a.Category == category
+                })
+                const sumInflation = newArray.reduce((acc, value) => acc + value[2021], 0)
+                const avgInflation = sumInflation / newArray.length
+    
+                valueCard3.text(avgInflation.toFixed(2) + "%")
+            }
+            else{
+                valueCard3.text("")
+            }
+        }
+    }
+    
+}
+
+const getCategory = (category) => {
+    valueCard2.text(category)
+    
+}
 
 checksCategory
     .selectAll('input')
@@ -190,14 +235,19 @@ selectCountry
 
 selectCountry.on("change", (e) => {
     e.preventDefault()
-    console.log(selectCountry.node().value)
-    // getAvgInflation(selectCountry.node().value)
+    // console.log(selectCountry.node().value)
+    getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 })
+
+getAvgInflation()
 
 checksCategory.selectAll('div.form-check').on("change", (e) => {
     e.preventDefault()
-    console.log(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+    getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+    getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 })
+
+getCategory()
 
 }
 
