@@ -120,14 +120,12 @@ const filterCategory = filter
 
 const titleCategory = filterCategory
     .append('div')
-    .attr('class', 'titleCategory')
+    .attr('class', 'titleFilter')
     .text('Filter by Category')
 
 const checksCategory = filterCategory
     .append('div')
     .attr('class', 'checksCategory')
-    // .append('div')
-    // .attr('class', 'form-check')
 
 const filterCountry = filter
     .append('div')
@@ -135,15 +133,89 @@ const filterCountry = filter
 
 const titleCountry = filterCountry
     .append('div')
-    .attr('class', 'titleCountry')
+    .attr('class', 'titleFilter')
     .text('Filter by Country')
 
 const selectCountry = filterCountry
     .append('div')
+    .attr('class', 'selectCountry')
     .append('select')
     .attr('class', 'form-select')
     .attr('style', 'margin-top: 5%')
+
+const filterYear = filter
+    .append('div')
+    .attr('class', 'filterYear')
+
+const titleYear = filterYear
+    .append('div')
+    .attr('class', 'titleFilter')
+    .text('Filter by Year')
+
+const rangeYear = filterYear
+    .append('div')
+    .attr('class', 'rangeYear')
+
+const wrapper = rangeYear
+    .append('div')
+    .attr('class', 'wrapper')
+
+const price_input = wrapper
+    .append('div')
+    .attr('class', 'price-input')
+
+const fieldMin = price_input
+    .append('div')
+    .attr('class', 'field')
+
+fieldMin
+    .append('span')
+    .text('Min')
+
+fieldMin
+    .append('input')
+    .attr('type', 'number')
+    .attr('class', 'input-min')
+
+const separator = price_input
+    .append('div')
+    .attr('class', 'separator')
+    .text('-')
+
+const fieldMax = price_input
+    .append('div')
+    .attr('class', 'field')
+
+fieldMax
+    .append('span')
+    .text('Max')
+
+fieldMax
+    .append('input')
+    .attr('type', 'number')
+    .attr('class', 'input-max')
+
+const slider = wrapper
+    .append('div')
+    .attr('class', 'slider')
+    .append('div')
+    .attr('class', 'progress')
     
+const rangeInput = wrapper
+    .append('div')
+    .attr('class', 'range-input')
+
+rangeInput
+    .append('input')
+    .attr('type', 'range')
+    .attr('class', 'range-min')
+
+rangeInput
+    .append('input')
+    .attr('type', 'range')
+    .attr('class', 'range-max')
+
+
     //Accessors
 // Escaladores 
 // const y = d3
