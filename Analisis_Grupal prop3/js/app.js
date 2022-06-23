@@ -210,11 +210,11 @@ rangeInput
     .attr('type', 'range')
     .attr('class', 'range-min')
 
+
 rangeInput
     .append('input')
     .attr('type', 'range')
     .attr('class', 'range-max')
-
 
     //Accessors
 // Escaladores 
@@ -238,6 +238,10 @@ const load = async () => {
 const distinctCountry = [... new Set(data.map((d) => d.Country))]
 const distinctCategory = [... new Set(data.map((d) => d.Category))]
 
+const years = Object.keys(data[0]).filter(year => !isNaN(+year))
+const minYear = Math.min(...years)
+const maxYear = Math.max(...years)
+
 const getAvgInflation = (country, category) => {
 
     if (country !== undefined && category !== undefined) {
@@ -246,7 +250,6 @@ const getAvgInflation = (country, category) => {
                 a.Category == category
         })
         
-        // console.log(newArray)
         const sumInflation = newArray.reduce((acc, value) => acc + value[2021], 0)
         const avgInflation = sumInflation / newArray.length
     
@@ -282,7 +285,6 @@ const getAvgInflation = (country, category) => {
 
 const getCategory = (category) => {
     valueCard2.text(category)
-    
 }
 
 checksCategory
@@ -303,6 +305,26 @@ selectCountry
     .attr('value', (d) => d)
     .text((d) => d)
 
+fieldMin
+    .select('input')
+    .attr('value', minYear)
+
+fieldMax
+    .select('input')
+    .attr('value', maxYear)
+
+rangeYear
+    .select('input.range-min')
+    .attr('min', minYear)
+    .attr('max', maxYear)
+    .attr('value', minYear)
+
+rangeYear
+    .select('input.range-max')
+    .attr('min', minYear)
+    .attr('max', maxYear)
+    .attr('value', maxYear)
+
 // Events
 
 selectCountry.on("change", (e) => {
@@ -320,6 +342,47 @@ checksCategory.selectAll('div.form-check').on("change", (e) => {
 })
 
 getCategory()
+
+let yearGAP = 1
+
+rangeInput.selectAll('input').on('input', (e) => {
+
+    e.preventDefault()
+
+    let minVal = rangeInput.select('input.range-min').node().value,
+    maxVal = rangeInput.select('input.range-max').node().value
+
+    totalArray = years.length
+    positionArray_Min = years.indexOf(minVal)
+    positionArray_Max = years.indexOf(maxVal)
+
+    if(maxVal - minVal < yearGAP){
+
+        if(e.target.className === 'range-min'){
+            rangeInput.select('input.range-min').node().value = maxVal - yearGAP
+        } else {
+            rangeInput.select('input.range-max').node().value = minVal + yearGAP
+        }
+        
+    } else {
+
+        fieldMin
+        .select('input')
+        .attr('value', minVal)
+
+        fieldMax
+        .select('input')
+        .attr('value', maxVal)
+
+        slider.style('left', (positionArray_Min / totalArray) * 105 + "%")
+        slider.style('right', 95 - (positionArray_Max / totalArray) * 100 + "%")  
+    }
+})
+
+fieldMin.select('input').on('change', (e) => {
+    e.preventDefault()
+    
+})
 
 }
 
