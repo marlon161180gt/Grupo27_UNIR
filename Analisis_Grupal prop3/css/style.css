@@ -151,8 +151,8 @@ input[type="number"]::-webkit-inner-spin-button{
 
 .slider .progress {
     height: 5px;
-    left: 25%;
-    right: 25%;
+    left: 100%;
+    right: 0%;
     position: absolute;
     border-radius: 5px;
     background: black;
