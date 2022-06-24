@@ -245,14 +245,23 @@ const maxYear = Math.max(...years)
 const getAvgInflation = (country, category) => {
 
     if (country !== undefined && category !== undefined) {
+
         var newArray = data.filter(function (a){
             return a.Country == country &&
                 a.Category == category
         })
+
+        const minVal = rangeInput.select('input.range-min').node().value,
+        maxVal = rangeInput.select('input.range-max').node().value
+
+        var newArray2 = Object.entries(newArray[0]).filter(columns => columns >= minVal && columns <= (maxVal+1))
         
-        const sumInflation = newArray.reduce((acc, value) => acc + value[2021], 0)
-        const avgInflation = sumInflation / newArray.length
-    
+        const sumInflation = newArray2.reduce((acc, value) => acc + value[1], 0)
+        
+        const totalRegistros = newArray2.filter(element => element[1] != null)
+
+        const avgInflation = sumInflation / totalRegistros.length
+        
         valueCard3.text(avgInflation.toFixed(2) + "%")
     }
     else {
@@ -296,7 +305,12 @@ checksCategory
     .html(r => `
     <input class="form-check-input" type="radio" name="Country" value="${r}">
     <label class="form-check-label">${r}`)
+    
 
+checksCategory
+    .select('input')
+    .property('checked', true)
+    
 selectCountry
     .selectAll('option')
     .data(distinctCountry)
@@ -308,10 +322,13 @@ selectCountry
 fieldMin
     .select('input')
     .attr('value', minYear)
+    .attr('readonly', true)
 
 fieldMax
     .select('input')
     .attr('value', maxYear)
+    .attr('readonly', true)
+
 
 rangeYear
     .select('input.range-min')
@@ -327,13 +344,13 @@ rangeYear
 
 // Events
 
+getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+
 selectCountry.on("change", (e) => {
     e.preventDefault()
     // console.log(selectCountry.node().value)
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 })
-
-getAvgInflation()
 
 checksCategory.selectAll('div.form-check').on("change", (e) => {
     e.preventDefault()
@@ -377,11 +394,8 @@ rangeInput.selectAll('input').on('input', (e) => {
         slider.style('left', (positionArray_Min / totalArray) * 105 + "%")
         slider.style('right', 95 - (positionArray_Max / totalArray) * 100 + "%")  
     }
-})
 
-fieldMin.select('input').on('change', (e) => {
-    e.preventDefault()
-    
+    getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 })
 
 }
