@@ -345,10 +345,10 @@ rangeYear
 // Events
 
 getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
 selectCountry.on("change", (e) => {
     e.preventDefault()
-    // console.log(selectCountry.node().value)
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 })
 
@@ -357,8 +357,6 @@ checksCategory.selectAll('div.form-check').on("change", (e) => {
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 })
-
-getCategory()
 
 let yearGAP = 1
 
