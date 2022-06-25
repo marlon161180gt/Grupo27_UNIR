@@ -17,7 +17,7 @@ const title = layout
     .append('div')
     .attr('class', 'title')
     .append('h2')
-    .text('Analiisis Inflacionario Global')
+    .text('Analisis Inflacionario Global')
 
 // Layer for cards and chart
     const chartGroup = layout
@@ -59,7 +59,6 @@ const valueCard2 = card2
     .append('div')
     .append('p')
     .attr('class', 'dataCard')
-    // .text('Food')
 
 const card3 = cardGroup
     .append('div')
@@ -89,7 +88,6 @@ const valueCard4 = card4
     .append('div')
     .append('p')
     .attr('class', 'dataCard')
-    .text('-58.87%')
 
 // Layer of chart
     const chartLayer = chartGroup
@@ -200,6 +198,7 @@ const slider = wrapper
     .attr('class', 'slider')
     .append('div')
     .attr('class', 'progress')
+
     
 const rangeInput = wrapper
     .append('div')
@@ -243,6 +242,9 @@ const minYear = Math.min(...years)
 const maxYear = Math.max(...years)
 
 const getAvgInflation = (country, category) => {
+    
+    const minVal = rangeInput.select('input.range-min').node().value,
+    maxVal = rangeInput.select('input.range-max').node().value
 
     if (country !== undefined && category !== undefined) {
 
@@ -251,49 +253,80 @@ const getAvgInflation = (country, category) => {
                 a.Category == category
         })
 
-        const minVal = rangeInput.select('input.range-min').node().value,
-        maxVal = rangeInput.select('input.range-max').node().value
+        if (newArray[0] === undefined) {
 
-        var newArray2 = Object.entries(newArray[0]).filter(columns => columns >= minVal && columns <= (maxVal+1))
-        
-        const sumInflation = newArray2.reduce((acc, value) => acc + value[1], 0)
-        
-        const totalRegistros = newArray2.filter(element => element[1] != null)
+            valueCard3
+                .text('No Data')
+                .style('color', 'black')
+            
+        } else {
 
-        const avgInflation = sumInflation / totalRegistros.length
-        
-        valueCard3.text(avgInflation.toFixed(2) + "%")
-    }
-    else {
-        if(country !== undefined && category === undefined){
-            var newArray = data.filter(function (a){
-                return a.Country == country
-            })
-            const sumInflation = newArray.reduce((acc, value) => acc + value[2021], 0)
-            const avgInflation = sumInflation / newArray.length
-
+            var newArray2 = Object.entries(newArray[0]).filter(columns => columns >= minVal && columns <= (maxVal+1))
+            
+            const sumInflation = newArray2.reduce((acc, value) => acc + value[1], 0)
+            
+            const totalRegistros = newArray2.filter(element => element[1] != null)
+    
+            const avgInflation = sumInflation / totalRegistros.length
+    
+            
+            if (avgInflation < 0){
+                valueCard3
+                .style('color', 'red')
+            } else {
+                valueCard3
+                .style('color', 'green')
+            }
             valueCard3.text(avgInflation.toFixed(2) + "%")
         }
-        else{
-            if(country === undefined && category !== undefined){
-                var newArray = data.filter(function (a){
-                    return a.Category == category
-                })
-                const sumInflation = newArray.reduce((acc, value) => acc + value[2021], 0)
-                const avgInflation = sumInflation / newArray.length
-    
-                valueCard3.text(avgInflation.toFixed(2) + "%")
-            }
-            else{
-                valueCard3.text("")
-            }
-        }
-    }
-    
+    }   
+
 }
 
 const getCategory = (category) => {
     valueCard2.text(category)
+}
+
+const getVarLastYear = (country, category) => {
+
+    const maxVal = rangeInput.select('input.range-max').node().value
+
+    if (country !== undefined && category !== undefined){
+
+        var newArray = data.filter(function (a){
+            return a.Country == country &&
+                a.Category == category
+        })
+
+        if (newArray[0] === undefined){
+            valueCard4
+                .text('No Data')
+                .style('color', 'black')
+        } else {
+
+            const varLastYear = (newArray[0][maxVal] / newArray[0][maxVal-1] - 1) * 100
+
+            if (isNaN(varLastYear) || !isFinite(varLastYear)){
+
+                valueCard4
+                    .text('No Data')
+                    .style('color', 'black')
+
+            } else {
+
+                if (varLastYear < 0){
+                    valueCard4
+                    .style('color', 'red')
+                } else {
+                    valueCard4
+                    .style('color', 'green')
+                }
+                valueCard4.text(varLastYear.toFixed(2) + "%")
+            }
+
+        }
+    }
+
 }
 
 checksCategory
@@ -346,16 +379,21 @@ rangeYear
 
 getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
 selectCountry.on("change", (e) => {
     e.preventDefault()
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+    getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+
 })
 
 checksCategory.selectAll('div.form-check').on("change", (e) => {
     e.preventDefault()
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+    getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+
 })
 
 let yearGAP = 1
@@ -394,7 +432,11 @@ rangeInput.selectAll('input').on('input', (e) => {
     }
 
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+    getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+
 })
+
+
 
 }
 
