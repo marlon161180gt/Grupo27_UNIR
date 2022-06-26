@@ -96,8 +96,10 @@ const valueCard4 = card4
     .append('div')
     .attr('class', 'chartLayer')
 
+//Espacio de grafico de Tendencia
 const titleChart = chartLayer
     .append('div')
+    .attr('id',function(d){return d.line_id;})
     .append('h3')
     .attr('class', 'titleChart')
     .text('Analisis de tendencia')
@@ -241,9 +243,9 @@ const distinctCategory = [... new Set(data.map((d) => d.Category))]
 
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 30, bottom: 30, left: 60},
-    width = 460 - margin.left - margin.right,
+    width = 500 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
-    
+
 
 const getAvgInflation = (country, category) => {
 
