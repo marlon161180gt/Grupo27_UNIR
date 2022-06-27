@@ -52,6 +52,11 @@
     height: 495px;
 }
 
+.drawChart {
+    width: 1500px;
+    height: 495px;
+}
+
 .filter {
     float: right;
     height: 720px;
