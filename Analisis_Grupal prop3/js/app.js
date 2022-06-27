@@ -107,9 +107,9 @@ const chart = chartLayer
 
 const drawChart = chart
     .append('g')
+    .attr('class', 'drawChart')
     .attr('transform', `translate(${margins.left},${margins.top})`)
-
- 
+    
 //-------------------------------------------------------------------------------------------------
 
 const filter = layout
@@ -220,6 +220,9 @@ rangeInput
     .attr('class', 'range-max')
 
     //Accessors
+
+    // const xAccessor = (d) => d.Country
+    // const yAccessor = (d) 
 // Escaladores 
 // const y = d3
 // .scaleLinear()
@@ -244,6 +247,52 @@ const distinctCategory = [... new Set(data.map((d) => d.Category))]
 const years = Object.keys(data[0]).filter(year => !isNaN(+year))
 const minYear = Math.min(...years)
 const maxYear = Math.max(...years)
+
+const arrayFullData = Object.entries(data[0]).filter(value => !isNaN(value[0]) && !isNaN(value[1]))
+
+    //Accessors
+
+    const yAccessor = (d) => d[2011]
+    const xAccessor = (d) => d.Country
+
+    // Escalators
+
+    const y = d3
+        .scaleLinear()
+        .domain([d3.min(data, yAccessor), d3.max(data, yAccessor)])
+        .range([drawChart.style('height').slice(0,-2), 0])
+
+    const x = d3
+        .scaleBand()
+        .domain(d3.map(data, xAccessor))
+        .range([0, drawChart.style('width').slice(0,-2)])
+        .paddingOuter(0.2)
+        .paddingInner(0.1)
+
+    // Elements
+    const rect = drawChart
+    .selectAll('rect')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr('x', (d) => x(xAccessor(d)))
+    .attr('y', (d) => y(yAccessor(d)))
+    .attr('width', x.bandwidth)
+    .attr('height', (d) => drawChart.style('height').slice(0,-2) - y(yAccessor(d)))
+    .attr('fill', 'rgb(75,172,198)')
+
+
+const drawChartRect = (country, category) => {
+    if (country !== undefined && category !== undefined){
+
+        var newArray = data.filter(function (a){
+            return a.Country == country &&
+                a.Category == category
+        })
+
+    }
+}
+
 
 const getAvgInflation = (country, category) => {
     
@@ -335,132 +384,132 @@ const getVarLastYear = (country, category) => {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------
 
-// Dimensiones
-const anchoTotal = +chart.style("width").slice(0, -2)
-const altoTotal = (anchoTotal * 9) / 16
+// // Dimensiones
+// const anchoTotal = +chart.style("width").slice(0, -2)
+// const altoTotal = (anchoTotal * 9) / 16
 
-//Graph print
-const ancho = anchoTotal - margins.left - margins.right
-const alto = altoTotal - margins.top - margins.bottom
+// //Graph print
+// const ancho = anchoTotal - margins.left - margins.right
+// const alto = altoTotal - margins.top - margins.bottom
     
-    // Elementos gráficos (layers)
-    const svg = chart
-      .append("svg")
-      .attr("width", anchoTotal)
-      .attr("height", altoTotal)
-      .attr("class", "chart")
+//     // Elementos gráficos (layers)
+//     const svg = chart
+//       .append("svg")
+//       .attr("width", anchoTotal)
+//       .attr("height", altoTotal)
+//       .attr("class", "chart")
       
-    drawChart
-      .append("rect")
-      .attr("height", alto)
-      .attr("width", ancho)
-      .attr("fill", "blue")
+//     drawChart
+//       .append("rect")
+//       .attr("height", alto)
+//       .attr("width", ancho)
+//       .attr("fill", "blue")
     
  
-const draw = async ( ) => {     
+// const draw = async () => {     
 
- //   data = await d3.csv('Dataset_inflation.csv', d3.autoType)
+//  //   data = await d3.csv('Dataset_inflation.csv', d3.autoType)
 
-    selectCountry
-    .selectAll("option")
-    .data(Object.keys(data[0]).slice(1))
-    .enter()
-    .append("option")
-    .attr("value", (d) => d)
-    .text((d) => d)
+//     // selectCountry
+//     // .selectAll("option")
+//     // .data(Object.keys(data[0]).slice(1))
+//     // .enter()
+//     // .append("option")
+//     // .attr("value", (d) => d)
+//     // .text((d) => d)
 
-  // Accessor
-  const xAccessor = (d) => d.Country
+//   // Accessor
+//   const xAccessor = (d) => d.Country
 
-  // Escaladores
-  const y = d3.scaleLinear().range([alto, 0])
-  const color = d3
-    .scaleOrdinal()
-    .domain(Object.keys(data[0]).slice(1))
-    .range(d3.schemeTableau10)
+//   // Escaladores
+//   const y = d3.scaleLinear().range([alto, 0])
+//   const color = d3
+//     .scaleOrdinal()
+//     .domain(Object.keys(data[0]).slice(1))
+//     .range(d3.schemeTableau10)
 
-  // console.log(data)
-  // console.log(d3.map(data, xAccessor))
+//   // console.log(data)
+//   // console.log(d3.map(data, xAccessor))
 
-  const x = d3.scaleBand().range([0, ancho]).paddingOuter(0.2).paddingInner(0.1)
+//   const x = d3.scaleBand().range([0, ancho]).paddingOuter(0.2).paddingInner(0.1)
 
-//   const titulo = g
-//     .append("text")
-//     .attr("x", ancho / 2)
-//     .attr("y", -15)
-//     .classed("titulo", true)
+// //   const titulo = g
+// //     .append("text")
+// //     .attr("x", ancho / 2)
+// //     .attr("y", -15)
+// //     .classed("titulo", true)
 
- const etiquetas = drawChart.append("g")
+//  const etiquetas = drawChart.append("g")
 
-  const xAxisGroup = drawChart
-    .append("g")
-    .attr("transform", `translate(0, ${alto})`)
-    .classed("axis", true)
-  const yAxisGroup = drawChart.append("g").classed("axis", true)
+//   const xAxisGroup = drawChart
+//     .append("g")
+//     .attr("transform", `translate(0, ${alto})`)
+//     .classed("axis", true)
+//   const yAxisGroup = drawChart.append("g").classed("axis", true)
 
-  const render = (variable) => {
-    // Accesores
-    const yAccessor = (d) => d[variable]
-    data.sort((a, b) => yAccessor(b) - yAccessor(a))
+//   const render = (variable) => {
+//     // Accesores
+//     const yAccessor = (d) => d[variable]
+//     data.sort((a, b) => yAccessor(b) - yAccessor(a))
 
-    // Escaladores
-    y.domain([0, d3.max(data, yAccessor)])
-    x.domain(d3.map(data, xAccessor))
+//     // Escaladores
+//     y.domain([0, d3.max(data, yAccessor)])
+//     x.domain(d3.map(data, xAccessor))
 
-    // Rectángulos (Elementos)
-    const rect = drawChart.selectAll("rect").data(data, xAccessor)
-    rect
-      .enter()
-      .append("rect")
-      .attr("x", (d) => x(xAccessor(d)))
-      .attr("y", (d) => y(0))
-      .attr("width", x.bandwidth())
-      .attr("height", 0)
-      .attr("fill", "green")
-      .merge(rect)
-      .transition()
-      .duration(2500)
-      // .ease(d3.easeBounce)
-      .attr("x", (d) => x(xAccessor(d)))
-      .attr("y", (d) => y(yAccessor(d)))
-      .attr("width", x.bandwidth())
-      .attr("height", (d) => alto - y(yAccessor(d)))
-      .attr("fill", (d) =>
-        xAccessor(d) == "Satélite" ? "#f00" : color(variable)
-      )
+//     // Rectángulos (Elementos)
+//     const rect = drawChart.selectAll("rect").data(data, xAccessor)
+//     rect
+//       .enter()
+//       .append("rect")
+//       .attr("x", (d) => x(xAccessor(d)))
+//       .attr("y", (d) => y(0))
+//       .attr("width", x.bandwidth())
+//       .attr("height", 0)
+//       .attr("fill", "green")
+//       .merge(rect)
+//       .transition()
+//       .duration(2500)
+//       // .ease(d3.easeBounce)
+//       .attr("x", (d) => x(xAccessor(d)))
+//       .attr("y", (d) => y(yAccessor(d)))
+//       .attr("width", x.bandwidth())
+//       .attr("height", (d) => alto - y(yAccessor(d)))
+//       .attr("fill", (d) =>
+//         xAccessor(d) == "Satélite" ? "#f00" : color(variable)
+//       )
 
-    const et = etiquetas.selectAll("text").data(data)
-    et.enter()
-      .append("text")
-      .attr("x", (d) => x(xAccessor(d)) + x.bandwidth() / 2)
-      .attr("y", (d) => y(0))
-      .merge(et)
-      .transition()
-      .duration(2500)
-      .attr("x", (d) => x(xAccessor(d)) + x.bandwidth() / 2)
-      .attr("y", (d) => y(yAccessor(d)))
-      .text(yAccessor)
+//     const et = etiquetas.selectAll("text").data(data)
+//     et.enter()
+//       .append("text")
+//       .attr("x", (d) => x(xAccessor(d)) + x.bandwidth() / 2)
+//       .attr("y", (d) => y(0))
+//       .merge(et)
+//       .transition()
+//       .duration(2500)
+//       .attr("x", (d) => x(xAccessor(d)) + x.bandwidth() / 2)
+//       .attr("y", (d) => y(yAccessor(d)))
+//       .text(yAccessor)
 
-    // Títulos
-    titulo.text(`${variable} de las Tiendas`)
+//     // Títulos
+//     titulo.text(`${variable} de las Tiendas`)
 
-    // Ejes
-    const xAxis = d3.axisBottom(x)
-    const yAxis = d3.axisLeft(y).ticks(8)
-    xAxisGroup.transition().duration(2500).call(xAxis)
-    yAxisGroup.transition().duration(2500).call(yAxis)
-  }
+//     // Ejes
+//     const xAxis = d3.axisBottom(x)
+//     const yAxis = d3.axisLeft(y).ticks(8)
+//     xAxisGroup.transition().duration(2500).call(xAxis)
+//     yAxisGroup.transition().duration(2500).call(yAxis)
+//   }
 
-  // Eventos
-  selectCountry.on("change", (e) => {
-    e.preventDefault()
-    // console.log(e.target.value, metrica.node().value)
-    render(e.target.value)
-  })
-  render()
-}
+//   // Eventos
+//   selectCountry.on("change", (e) => {
+//     e.preventDefault()
+//     // console.log(e.target.value, metrica.node().value)
+//     render(e.target.value)
+//   })
+//   render()
+// }
 
-draw()
+// draw()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
