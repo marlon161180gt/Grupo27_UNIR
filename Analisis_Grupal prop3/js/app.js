@@ -296,10 +296,11 @@ const load = async () => {
                     a.Category == category
             })
 
-            console.log(newArray)
-
-            var arrayYears = Object.entries(newArray[0]).filter(columns => columns >= minVal && columns <= (maxVal+1))   
-
+            var arrayYears = Object.entries(newArray[0]).filter(columns => columns >= minVal && columns <= (maxVal+1))
+            
+            var test = []
+            arrayYears.forEach(([key, value])=> test[key] = value)
+            console.log(test)
 
         }
     }
