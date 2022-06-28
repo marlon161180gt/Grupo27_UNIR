@@ -4,7 +4,7 @@ const layout = d3.select("#layout")
 // Dimensiones
 
 const margins = {
-    top: 10,
+    top: 50,
     right: 20,
     bottom: 100,
     left: 50,
@@ -109,6 +109,16 @@ const drawChart = chart
     .append('g')
     .attr('class', 'drawChart')
     .attr('transform', `translate(${margins.left},${margins.top})`)
+
+const labelsLayer = drawChart
+    .append('g')
+    .attr('class', 'labels')
+
+const xAxisLayer = drawChart
+    .append('g')
+
+const yAxisLayer = drawChart
+    .append('g')
     
 //-------------------------------------------------------------------------------------------------
 
@@ -219,72 +229,46 @@ rangeInput
     .attr('type', 'range')
     .attr('class', 'range-max')
 
-    //Accessors
-
-    // const xAccessor = (d) => d.Country
-    // const yAccessor = (d) 
-// Escaladores 
-// const y = d3
-// .scaleLinear()
-// .domain([0, d3.max(data, yAccessor)])
-// .range([alto, 0])
-
-// const x = d3
-// .scaleBand()
-// .domain(d3.map(data, xAccessor))
-// .range([0, ancho])
-// .paddingOuter(0.2)
-// .paddingInner(0.1)
-
-
 // Load Data
 const load = async () => {
-    data = await d3.csv('New_DataInflation.csv', d3.autoType)
+    data = await d3.csv('New_DataInflation (2).csv', d3.autoType)
 
     const distinctCountry = [... new Set(data.map((d) => d.Country))]
     const distinctCategory = [... new Set(data.map((d) => d.Category))]
     const distinctYears = [... new Set(data.map((d) => d.Year))]
 
-    const minYear = 2011 //Math.min(...distinctYears)
+    const minYear = Math.min(...distinctYears)
     const maxYear = Math.max(...distinctYears)
 
-    //Accessors
-    
-    const yAccessor = (d) => d[2011]
-    const xAccessor = (d) => d.Country
-    
-
     // Escalators
-
     const y = d3
         .scaleLinear()
-        .domain([d3.min(data, yAccessor), d3.max(data, yAccessor)])
         .range([drawChart.style('height').slice(0,-2), 0])
 
     const x = d3
         .scaleBand()
-        .domain(d3.map(data, xAccessor))
         .range([0, drawChart.style('width').slice(0,-2)])
         .paddingOuter(0.2)
         .paddingInner(0.1)
 
-        // console.log(d3.map(data, xAccessor))
-        // console.log(d3.map(data, yAccessor))
+    // const xAxisGroup = chart
+    //     .append('g')
+    //     .attr('transform', `translate(${margins.left}, ${chart.style('height').slice(0,-2)-45})`)
+    //     .classed('axis', true)
 
-    // Elements
-    const rect = drawChart
-        .selectAll('rect')
-        .data(data)
-        .enter()
-        .append('rect')
-        .attr('x', (d) => x(xAccessor(d)))
-        .attr('y', (d) => y(yAccessor(d)))
-        .attr('width', x.bandwidth)
-        .attr('height', (d) => drawChart.style('height').slice(0,-2) - y(yAccessor(d)))
-        .attr('fill', 'rgb(75,172,198)')
+    const xAxisGroup = xAxisLayer
+        .append('g')
+        .attr('transform', `translate(0, ${drawChart.style('height').slice(0,-2)})`)
+        .classed('axis', true)
+
+    const yAxisGroup = yAxisLayer
+        .append('g')
+        .classed('axis', true)
+
 
 
     const drawChartRect = (country, category) => {
+
         if (country !== undefined && category !== undefined){
 
             const minVal = rangeInput.select('input.range-min').node().value,
@@ -292,8 +276,94 @@ const load = async () => {
 
             var newArray = data.filter(function (a){
                 return a.Country == country &&
-                    a.Category == category && a.Year >= minVal && a.Year<=maxVal
+                    a.Category == category && a.Year >= minVal && a.Year <= maxVal
             })
+
+            if (newArray[0] === null || newArray[0] === undefined){
+
+                const noData = drawChart
+                    .selectAll('rect')
+                    .remove()
+   
+                const noLabels = drawChart
+                    .selectAll('text')
+                    .remove()
+                    
+                // drawChart
+                //     .append('text')
+                //     .attr('class', 'noDataText')
+                //     .text('No data to present')
+                
+
+            } else {
+
+                // drawChart.select('text').remove()
+
+                Object.keys(newArray).map((key) => 
+                    (newArray[key]['Inflation'] === null) ?  newArray[key]['Inflation'] = 0 :  newArray[key]['Inflation'])
+    
+                const xAccessor = (d) => d.Year
+                const yAccessor = (d) => d.Inflation
+    
+                x.domain(d3.map(newArray, xAccessor))
+    
+                y.domain([d3.min(newArray, yAccessor), d3.max(newArray, yAccessor)])
+    
+                const rect = drawChart
+                    .selectAll('rect')
+                    .data(newArray)
+    
+                rect
+                    .enter()
+                    .append('rect')
+                    .attr('x', (d) => x(xAccessor(d)))
+                    .attr('y', (d) => y(0))
+                    .attr('width', x.bandwidth)
+                    .attr('height', 0)
+                    .attr('fill', 'rgb(75,172,198)')
+                    .merge(rect)
+                    .transition()
+                    .duration(2500)
+                    .attr('x', (d) => x(xAccessor(d)))
+                    .attr('y', (d) => y(yAccessor(d)))
+                    .attr('width', x.bandwidth)
+                    .attr('height', (d) => drawChart.style('height').slice(0,-2) - y(yAccessor(d)))
+                    .attr('fill', 'rgb(75,172,198)')
+    
+                const labels = labelsLayer
+                    .selectAll('text')
+                    .data(newArray)
+    
+                labels
+                    .enter()
+                    .append('text')
+                    .attr('x', (d) => x(xAccessor(d)) + x.bandwidth() / 2)
+                    .attr('y', (d) => y(0))
+                    .merge(labels)
+                    .transition()
+                    .duration(2500)
+                    .attr('x', (d) => x(xAccessor(d)) + x.bandwidth() / 2)
+                    .attr('y', (d) => y(yAccessor(d)+0.1))
+                    .text(yAccessor)
+
+                // Ejes
+                const xAxis = d3.axisBottom(x)
+                const yAxis = d3.axisLeft(y)
+
+                // const xAxisGroup = drawChart
+                // .append('g')
+                // .attr('transform', `translate(0, ${drawChart.style('height').slice(0,-2)})`)
+                // .classed('axis', true)
+                // .call(xAxis)
+        
+                // const yAxisGroup = drawChart
+                //     .classed('axis', true)
+                //     .call(yAxis)
+
+                xAxisGroup.transition().duration(2500).call(xAxis)
+                yAxisGroup.transition().duration(2500).call(yAxis)
+                // yAxisGroup.call(yAxis)
+            }
 
         }
     }
@@ -319,26 +389,22 @@ const load = async () => {
                     .style('color', 'black')
                 
             } else {
-
-                // var newArray2 = Object.entries(newArray).filter(columns => columns=='Year')
-                // console.log(newArray2)
                 
-                // const sumInflation = newArray2.reduce((acc, value) => acc + value, 0)
-                // console.log(sumInflation)
+                const sumInflation = newArray.reduce((acc, value) => acc + value.Inflation, 0)
                 
-                // const totalRegistros = newArray2.filter(element => element[1] != null)
+                const totalRegistros = newArray.filter(element => element.Inflation != null)
+                
         
-                // const avgInflation = sumInflation / totalRegistros.length
+                const avgInflation = sumInflation / totalRegistros.length
         
-                
-                // if (avgInflation < 0){
-                //     valueCard3
-                //     .style('color', 'red')
-                // } else {
-                //     valueCard3
-                //     .style('color', 'green')
-                // }
-                // valueCard3.text(avgInflation.toFixed(2) + "%")
+                if (avgInflation < 0){
+                    valueCard3
+                    .style('color', 'red')
+                } else {
+                    valueCard3
+                    .style('color', 'green')
+                }
+                valueCard3.text(avgInflation.toFixed(2) + "%")
             }
         }   
 
@@ -356,7 +422,7 @@ const load = async () => {
 
             var newArray = data.filter(function (a){
                 return a.Country == country &&
-                    a.Category == category
+                    a.Category == category && a.Year >= (maxVal-1) && a.Year <= maxVal
             })
 
             if (newArray[0] === undefined){
@@ -365,7 +431,7 @@ const load = async () => {
                     .style('color', 'black')
             } else {
 
-                const varLastYear = (newArray[0][maxVal] / newArray[0][maxVal-1] - 1) * 100
+                const varLastYear = (newArray[1]['Inflation'] / newArray[0]['Inflation'] - 1) * 100
 
                 if (isNaN(varLastYear) || !isFinite(varLastYear)){
 
@@ -447,6 +513,7 @@ const load = async () => {
         e.preventDefault()
         getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
         getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+        drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
     })
 
@@ -455,6 +522,7 @@ const load = async () => {
         getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
         getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
         getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+        drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
     })
 
@@ -489,8 +557,8 @@ const load = async () => {
             .select('input')
             .attr('value', maxVal)
 
-            slider.style('left', (positionArray_Min / totalArray) * 120 + "%")
-            slider.style('right', 100 - (positionArray_Max / totalArray) * 120 + "%")  
+            slider.style('left', (positionArray_Min / totalArray) * 105 + "%")
+            slider.style('right', 100 - (positionArray_Max / totalArray) * 105 + "%")  
         }
 
         getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
