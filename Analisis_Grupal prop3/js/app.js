@@ -251,19 +251,20 @@ const load = async () => {
 
     //Accessors
     
-    // const xAccessor = (d) => d.Country
+    const yAccessor = (d) => d[2011]
+    const xAccessor = (d) => d.Country
     
 
     // Escalators
 
     const y = d3
         .scaleLinear()
-        // .domain([d3.min(data, yAccessor), d3.max(data, yAccessor)])
+        .domain([d3.min(data, yAccessor), d3.max(data, yAccessor)])
         .range([drawChart.style('height').slice(0,-2), 0])
 
     const x = d3
         .scaleBand()
-        // .domain(d3.map(data, xAccessor))
+        .domain(d3.map(data, xAccessor))
         .range([0, drawChart.style('width').slice(0,-2)])
         .paddingOuter(0.2)
         .paddingInner(0.1)
@@ -272,16 +273,16 @@ const load = async () => {
         // console.log(d3.map(data, yAccessor))
 
     // Elements
-    // const rect = drawChart
-    //     .selectAll('rect')
-    //     .data(data)
-    //     .enter()
-    //     .append('rect')
-    //     .attr('x', (d) => x(xAccessor(d)))
-    //     .attr('y', (d) => y(yAccessor(d)))
-    //     .attr('width', x.bandwidth)
-    //     .attr('height', (d) => drawChart.style('height').slice(0,-2) - y(yAccessor(d)))
-    //     .attr('fill', 'rgb(75,172,198)')
+    const rect = drawChart
+        .selectAll('rect')
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr('x', (d) => x(xAccessor(d)))
+        .attr('y', (d) => y(yAccessor(d)))
+        .attr('width', x.bandwidth)
+        .attr('height', (d) => drawChart.style('height').slice(0,-2) - y(yAccessor(d)))
+        .attr('fill', 'rgb(75,172,198)')
 
 
     const drawChartRect = (country, category) => {
@@ -291,47 +292,13 @@ const load = async () => {
             maxVal = rangeInput.select('input.range-max').node().value
 
             var newArray = data.filter(function (a){
-                return a.Country == country 
-                // &&
-                //     a.Category == category
+                return a.Country == country &&
+                    a.Category == category
             })
 
-            // console.log(newArray)
+            console.log(newArray)
 
             var arrayYears = Object.entries(newArray[0]).filter(columns => columns >= minVal && columns <= (maxVal+1))   
-            var test = Object.keys(arrayYears)
-            console.log(arrayYears)
-            console.log(test)    
-
-            const xAccessor = (d) => test(d)
-            const yAccessor = (d) => d[2011]
-
-            // console.log(d3.map(newArray, xAccessor))
-
-            // y
-            // .domain([d3.min(newArray[2011], yAccessor), d3.max(newArray[2011], yAccessor)])
-
-            // console.log(d3.min(newArray[2011], yAccessor))
-            // console.log(d3.map(arrayFlat, yAccessor))
-            
-            // const xAccessor = 
-            // console.log(xAccessor)
-            
-            
-            // y
-            // .domain([d3.min(data, yAccessor), d3.max(data, yAccessor)])
-            .domain(d3.map(data, xAccessor))
-
-            const rect = drawChart
-            .selectAll('rect')
-            .data(arrayYears)
-            .enter()
-            .append('rect')
-            .attr('x', (d, i) => 10 * i)
-            .attr('y', 0)
-            .attr('width', x.bandwidth)
-            .attr('height', 100)
-            .attr('fill', 'rgb(75,172,198)')
 
 
         }
