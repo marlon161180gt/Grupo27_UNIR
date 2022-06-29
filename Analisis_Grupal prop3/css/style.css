@@ -188,10 +188,10 @@ input[type="range"]::-webkit-slider-thumb {
 
 .labels text{
     text-anchor: middle;
-    text-align: center;
 }
 
-/* .noDataText {
-    font-size: 32px;
-} */
+.rectElements {
+    width: 100%;
+}
+
 
