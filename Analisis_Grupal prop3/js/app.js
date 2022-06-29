@@ -7,7 +7,7 @@ const margins = {
     top: 50,
     right: 20,
     bottom: 100,
-    left: 50,
+    left: 30,
 }
 
 // Layers
@@ -110,15 +110,21 @@ const drawChart = chart
     .attr('class', 'drawChart')
     .attr('transform', `translate(${margins.left},${margins.top})`)
 
+const rectElements = drawChart
+    .append('g')
+    .attr('class', 'rectElements')
+
 const labelsLayer = drawChart
     .append('g')
     .attr('class', 'labels')
 
 const xAxisLayer = drawChart
     .append('g')
+    .attr('class', 'xAxis')
 
 const yAxisLayer = drawChart
     .append('g')
+    .attr('class', 'yAxis')
     
 //-------------------------------------------------------------------------------------------------
 
@@ -248,13 +254,12 @@ const load = async () => {
     const x = d3
         .scaleBand()
         .range([0, drawChart.style('width').slice(0,-2)])
+        // .range([0, chart.node().getBoundingClientRect().width])
+        // .range([0, '100vw'])
         .paddingOuter(0.2)
         .paddingInner(0.1)
 
-    // const xAxisGroup = chart
-    //     .append('g')
-    //     .attr('transform', `translate(${margins.left}, ${chart.style('height').slice(0,-2)-45})`)
-    //     .classed('axis', true)
+    // Axis
 
     const xAxisGroup = xAxisLayer
         .append('g')
@@ -265,9 +270,8 @@ const load = async () => {
         .append('g')
         .classed('axis', true)
 
-
-
     const drawChartRect = (country, category) => {
+
 
         if (country !== undefined && category !== undefined){
 
@@ -281,23 +285,15 @@ const load = async () => {
 
             if (newArray[0] === null || newArray[0] === undefined){
 
-                const noData = drawChart
+                const noData = rectElements
                     .selectAll('rect')
                     .remove()
    
                 const noLabels = drawChart
                     .selectAll('text')
-                    .remove()
-                    
-                // drawChart
-                //     .append('text')
-                //     .attr('class', 'noDataText')
-                //     .text('No data to present')
-                
+                    .remove()                
 
             } else {
-
-                // drawChart.select('text').remove()
 
                 Object.keys(newArray).map((key) => 
                     (newArray[key]['Inflation'] === null) ?  newArray[key]['Inflation'] = 0 :  newArray[key]['Inflation'])
@@ -309,7 +305,7 @@ const load = async () => {
     
                 y.domain([d3.min(newArray, yAccessor), d3.max(newArray, yAccessor)])
     
-                const rect = drawChart
+                const rect = rectElements
                     .selectAll('rect')
                     .data(newArray)
     
@@ -329,6 +325,8 @@ const load = async () => {
                     .attr('width', x.bandwidth)
                     .attr('height', (d) => drawChart.style('height').slice(0,-2) - y(yAccessor(d)))
                     .attr('fill', 'rgb(75,172,198)')
+
+                rect.exit().remove()
     
                 const labels = labelsLayer
                     .selectAll('text')
@@ -343,26 +341,24 @@ const load = async () => {
                     .transition()
                     .duration(2500)
                     .attr('x', (d) => x(xAccessor(d)) + x.bandwidth() / 2)
-                    .attr('y', (d) => y(yAccessor(d)+0.1))
+                    .attr('y', (d) => y(yAccessor(d))- (y(yAccessor(d))*0.01))
                     .text(yAccessor)
+
+                labels.exit().remove()
 
                 // Ejes
                 const xAxis = d3.axisBottom(x)
                 const yAxis = d3.axisLeft(y)
 
-                // const xAxisGroup = drawChart
-                // .append('g')
-                // .attr('transform', `translate(0, ${drawChart.style('height').slice(0,-2)})`)
-                // .classed('axis', true)
-                // .call(xAxis)
-        
-                // const yAxisGroup = drawChart
-                //     .classed('axis', true)
-                //     .call(yAxis)
+                xAxisGroup
+                    .transition()
+                    .duration(2500)
+                    .call(xAxis)
 
-                xAxisGroup.transition().duration(2500).call(xAxis)
-                yAxisGroup.transition().duration(2500).call(yAxis)
-                // yAxisGroup.call(yAxis)
+                yAxisGroup
+                    .transition()
+                    .duration(2500)
+                    .call(yAxis)
             }
 
         }
