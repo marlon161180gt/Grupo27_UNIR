@@ -270,12 +270,9 @@ const load = async () => {
 
     const x = d3
         .scaleBand()
-        // .range([0, drawChart.style('width').slice(0,-2)])
+        .range([0, drawChart.style('width').slice(0,-2)])
         .paddingOuter(0.2)
         .paddingInner(0.1)
-
-    // Función para obtener rango de las 'x' dinamico
-    setDynamicXRange()
 
     // Ejes de la grafica
     const xAxisGroup = xAxisLayer
@@ -518,6 +515,7 @@ const load = async () => {
 
     }
 
+    // Creando los botones radio de las categorias
     checksCategory
         .selectAll('input')
         .data(distinctCategory)
@@ -529,10 +527,12 @@ const load = async () => {
         <label class="form-check-label">${r}`)
         
 
+    // Asignando al primer elemento la propiedad de selección
     checksCategory
         .select('input')
         .property('checked', true)
-        
+    
+    // Creando las opciones de los paises del elemento select
     selectCountry
         .selectAll('option')
         .data(distinctCountry)
@@ -541,36 +541,41 @@ const load = async () => {
         .attr('value', (d) => d)
         .text((d) => d)
 
+    // Input de valor minimo del año en modo solo lectura
     fieldMin
         .select('input')
         .attr('value', minYear)
         .attr('readonly', true)
 
+    // Input de valor maximo del año en modo solo lectura
     fieldMax
         .select('input')
         .attr('value', maxYear)
         .attr('readonly', true)
 
 
+    // Asignación al elemento rango el valor minimo, maximo y valor inicial (para dato minimo)
     rangeYear
         .select('input.range-min')
         .attr('min', minYear)
         .attr('max', maxYear)
         .attr('value', minYear)
 
+    // Asignación al elemento rango el valor minimo, maximo y valor inicial (para dato maximo)
     rangeYear
         .select('input.range-max')
         .attr('min', minYear)
         .attr('max', maxYear)
         .attr('value', maxYear)
 
-    // Events
+    // Eventos
 
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
+    // Evento para cuando se genere un cambio en el elemento de selección de país
     selectCountry.on("change", (e) => {
         e.preventDefault()
         getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
@@ -579,6 +584,7 @@ const load = async () => {
 
     })
 
+    // Evento para cuando se genere un cambio en el elemento de botones radio
     checksCategory.selectAll('div.form-check').on("change", (e) => {
         e.preventDefault()
         getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
@@ -588,29 +594,45 @@ const load = async () => {
 
     })
 
+    // Evento para cuando se mueva el slider para la selección de años
     let yearGAP = 1
 
     rangeInput.selectAll('input').on('input', (e) => {
 
         e.preventDefault()
 
+        // Obtenemos los valores minimo y maximo de años
         let minVal = rangeInput.select('input.range-min').node().value,
         maxVal = rangeInput.select('input.range-max').node().value
 
+        // Obtenemos la longitud del arreglo de años
         totalArray = distinctYears.length
+
+        // Obtenemos la posición de los valores maximos y minimos dentro del array distinctYears
         positionArray_Min = distinctYears.indexOf(parseInt(minVal))
         positionArray_Max = distinctYears.indexOf(parseInt(maxVal))
 
+        // Condicional para mantener los valores minimo y maximo separados por 1 año
+        // Si la resta del valor maximo menos el valor minimo es menor al valor 'yearGAP'
         if(maxVal - minVal < yearGAP){
 
+            // Si la clase de la variable del evento es el rango minimo
             if(e.target.className === 'range-min'){
+
+                // Asignamos al rango minimo el valor maximo menos el gap definido
                 rangeInput.select('input.range-min').node().value = maxVal - yearGAP
+
+            // Si la clase de la variable del evento no es el rango minimo
             } else {
+
+                //Asignamos al rango maximo el valor minimo mas el gap definido
                 rangeInput.select('input.range-max').node().value = minVal + yearGAP
             }
-            
+         
+        // Si la resta del valor maximo menos el valor minimo no es menor al valor 'yearGAP'
         } else {
 
+            // Mantenemos los valores minimos y maximos en los input
             fieldMin
             .select('input')
             .attr('value', minVal)
@@ -619,6 +641,7 @@ const load = async () => {
             .select('input')
             .attr('value', maxVal)
 
+            // De acuerdo a la posicion de valor minimo y maximo del slider moveremos la barra de color negro del slider
             slider.style('left', (positionArray_Min / totalArray) * 105 + "%")
             slider.style('right', 100 - (positionArray_Max / totalArray) * 105 + "%")  
         }
@@ -628,10 +651,7 @@ const load = async () => {
         drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
     })
-
-    function setDynamicXRange(){
-        x.range([0, drawChart.style('width').slice(0,-2)])
-    }
 }
 
+// Iniciamos la función 'load'
 load()
