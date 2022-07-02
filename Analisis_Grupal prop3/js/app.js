@@ -655,10 +655,6 @@ const load = async () => {
         drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
     })
-
-    // drawChart.on('resize', (e) => {
-    //     window.location.reload()
-    // })
 }
 
 // Iniciamos la función 'load'
