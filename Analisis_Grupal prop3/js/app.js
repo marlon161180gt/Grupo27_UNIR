@@ -252,7 +252,7 @@ rangeInput
 
 // Función para la carga de datos y creación de grafica
 const load = async () => {
-    data = await d3.csv('New_DataInflation (2).csv', d3.autoType)
+    data = await d3.csv('New_DataInflation.csv', d3.autoType)
 
     // Constantes para obtener un arreglo de elementos únicos 
     const distinctCountry = [... new Set(data.map((d) => d.Country))]
@@ -570,6 +570,10 @@ const load = async () => {
 
     // Eventos
 
+    //window.onresize = window.location.reload()
+
+    // new ResizeObserver(document.location.reload).observe(drawChart.node())    
+
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
@@ -651,6 +655,10 @@ const load = async () => {
         drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
 
     })
+
+    // drawChart.on('resize', (e) => {
+    //     window.location.reload()
+    // })
 }
 
 // Iniciamos la función 'load'
