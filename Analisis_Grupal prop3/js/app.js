@@ -35,58 +35,59 @@ const card1 = cardGroup
     .append('div')
     .attr('class', 'card')
 
-const titleCard1 = card1
-    .append('div')
-    .append('h3')
-    .text('Total Países')
-
 const valueCard1 = card1
     .append('div')
     .append('p')
     .attr('class', 'dataCard')
     .text('150')
 
+const titleCard1 = card1
+    .append('div')
+    .append('h3')
+    .text('Rango de Años')
+ 
+
 const card2 = cardGroup
     .append('div')
     .attr('class', 'card')
-
-const titleCard2 = card2
-    .append('div')
-    .append('h3')
-    .text('Categoría')
 
 const valueCard2 = card2
     .append('div')
     .append('p')
     .attr('class', 'dataCard')
 
+const titleCard2 = card2
+    .append('div')
+    .append('h3')
+    .text('Categoría')
+
 const card3 = cardGroup
     .append('div')
     .attr('class', 'card')
-
-const titleCard3 = card3
-    .append('div')
-    .append('h3')
-    .text('Inflación Promedio')
 
 const valueCard3 = card3
     .append('div')
     .append('p')
     .attr('class', 'dataCard')  
 
+const titleCard3 = card3
+    .append('div')
+    .append('h3')
+    .text('Inflación Promedio')
+
 const card4 = cardGroup
     .append('div')
     .attr('class', 'card')
-
-const titleCard4 = card4
-    .append('div')
-    .append('h3')
-    .text('Variación último año')
 
 const valueCard4 = card4
     .append('div')
     .append('p')
     .attr('class', 'dataCard')
+
+const titleCard4 = card4
+    .append('div')
+    .append('h3')
+    .text('Variación último año')
 
 // Espacio de la grafica
     const chartLayer = chartGroup
@@ -98,7 +99,8 @@ const titleChart = chartLayer
     .append('div')
     .append('h3')
     .attr('class', 'titleChart')
-          .text('Analisis de tendencia')
+    .text('Analisis de tendencia')
+ 
 
 // Area de la grafica
 const chart = chartLayer
@@ -144,7 +146,7 @@ const filterCategory = filter
 const titleCategory = filterCategory
     .append('div')
     .attr('class', 'titleFilter')
-    .text('Filter by Category')
+    .text('Filtro por Categoria')
 
 const checksCategory = filterCategory
     .append('div')
@@ -158,7 +160,7 @@ const filterCountry = filter
 const titleCountry = filterCountry
     .append('div')
     .attr('class', 'titleFilter')
-    .text('Filter by Country')
+    .text('Filtro por Pais')
 
 const selectCountry = filterCountry
     .append('div')
@@ -175,7 +177,7 @@ const filterYear = filter
 const titleYear = filterYear
     .append('div')
     .attr('class', 'titleFilter')
-    .text('Filter by Year')
+    .text('Filtro por Año')
 
 const rangeYear = filterYear
     .append('div')
@@ -252,7 +254,7 @@ rangeInput
 
 // Función para la carga de datos y creación de grafica
 const load = async () => {
-    data = await d3.csv('New_DataInflation.csv', d3.autoType)
+    data = await d3.csv('New_DataInflation (2).csv', d3.autoType)
 
     // Constantes para obtener un arreglo de elementos únicos 
     const distinctCountry = [... new Set(data.map((d) => d.Country))]
@@ -349,12 +351,12 @@ const load = async () => {
                     .attr('fill', 'rgb(75,172,198)')
                     .merge(rect)
                     .transition()
-                    .duration(2500)
+                    .duration(2900)
                     .attr('x', (d) => x(xAccessor(d)))
                     .attr('y', (d) => y(yAccessor(d)))
                     .attr('width', x.bandwidth)
                     .attr('height', (d) => drawChart.style('height').slice(0,-2) - y(yAccessor(d)))
-                    .attr('fill', 'rgb(75,172,198)')
+                    .attr('fill', 'rgba(6,147,227,1)')
 
                 // Dado que hacemos un cambio de nuestro accesor 'x' debemos cerrar el ciclo para reiniciar un nuevo dominimo y se ajusten
                 // los rect
@@ -423,6 +425,7 @@ const load = async () => {
                 valueCard3
                     .text('No Data')
                     .style('color', 'black')
+                    .style('font-style','oblique')
                 
             } else {
                 
@@ -441,9 +444,11 @@ const load = async () => {
                 if (avgInflation < 0){
                     valueCard3
                     .style('color', 'red')
+                    .style('font-size','40px')
                 } else {
                     valueCard3
                     .style('color', 'green')
+                    .style('font-size','40px')
                 }
 
                 // Asignamos el valor a la tarjeta redondeando a dos decimales
@@ -455,7 +460,10 @@ const load = async () => {
 
     // Función para asignar la categoria a una tarjeta
     const getCategory = (category) => {
-        valueCard2.text(category)
+        valueCard2
+            .text(category)
+            .style('color', 'rgba(6,147,227,1)')
+            .style('font-size','25px')
     }
 
     // Función para obtener la variación dependiendo los parametros y el valor máximo del año seleccionado
@@ -501,9 +509,11 @@ const load = async () => {
                     if (varLastYear < 0){
                         valueCard4
                         .style('color', 'red')
+                        .style('font-size','40px')
                     } else {
                         valueCard4
                         .style('color', 'green')
+                        .style('font-size','40px')
                     }
 
                     // Asignamos el valor a la tarjeta redondeando a dos decimales
@@ -569,10 +579,6 @@ const load = async () => {
         .attr('value', maxYear)
 
     // Eventos
-
-    //window.onresize = window.location.reload()
-
-    // new ResizeObserver(document.location.reload).observe(drawChart.node())    
 
     getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
