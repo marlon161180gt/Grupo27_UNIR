@@ -7,7 +7,7 @@ const margins = {
     top: 50,
     right: 20,
     bottom: 100,
-    left: 30,
+    left: 65,
 }
 
 // Capas - Elementos HTML
@@ -254,7 +254,7 @@ rangeInput
 
 // Función para la carga de datos y creación de grafica
 const load = async () => {
-    data = await d3.csv('New_DataInflation (2).csv', d3.autoType)
+    data = await d3.csv('New_DataInflation.csv', d3.autoType)
 
     // Constantes para obtener un arreglo de elementos únicos 
     const distinctCountry = [... new Set(data.map((d) => d.Country))]
@@ -295,7 +295,7 @@ const load = async () => {
             // Obtenemos los valores de los años minimo y maximo de nuestro slider
             const minVal = rangeInput.select('input.range-min').node().value,
             maxVal = rangeInput.select('input.range-max').node().value
-
+    
             // Creamos un nuevo arreglo dependiendo los parametros de la funcíon y las constantes de los años
             var newArray = data.filter(function (a){
                 return a.Country == country &&
@@ -309,7 +309,7 @@ const load = async () => {
                 const noData = rectElements
                     .selectAll('rect')
                     .remove()
-   
+    
                 const noLabels = labelsLayer
                     .selectAll('text')
                     .remove()               
@@ -335,7 +335,7 @@ const load = async () => {
     
                 // Definimos el dominio dinamico que cambiara dependiendo los filtros de categoria, país y años
                 y.domain([d3.min(newArray, yAccessor), d3.max(newArray, yAccessor)])
-    
+
                 // Dibujo de elementos rect
                 const rect = rectElements
                     .selectAll('rect')
@@ -348,7 +348,7 @@ const load = async () => {
                     .attr('y', (d) => y(0))
                     .attr('width', x.bandwidth)
                     .attr('height', 0)
-                    .attr('fill', 'rgb(75,172,198)')
+                    .attr('fill', 'rgba(6,147,227,1)')
                     .merge(rect)
                     .transition()
                     .duration(2900)
@@ -366,18 +366,22 @@ const load = async () => {
                 const labels = labelsLayer
                     .selectAll('text')
                     .data(newArray)
-    
+
+                const f = d3.format(',.2%')
+                
                 labels
                     .enter()
                     .append('text')
                     .attr('x', (d) => x(xAccessor(d)) + x.bandwidth() / 2)
                     .attr('y', (d) => y(0))
+                    .attr('dy', (d) => y(0))
                     .merge(labels)
                     .transition()
-                    .duration(2500)
+                    .duration(2900)
                     .attr('x', (d) => x(xAccessor(d)) + x.bandwidth() / 2)
-                    .attr('y', (d) => y(yAccessor(d))- (y(yAccessor(d))*0.01))
-                    .text(yAccessor)
+                    .attr('y', (d) => y(yAccessor(d))- (y(yAccessor(d))))
+                    .attr('dy', (d) => y(yAccessor(d)) - 10)
+                    .text((d) => f(+d.Inflation/100))
 
                 // Dado que hacemos un cambio de nuestro accesor 'x' debemos cerrar el ciclo para reiniciar un nuevo dominimo y se ajusten
                 // las etqiuetas
@@ -385,19 +389,24 @@ const load = async () => {
 
                 // Ejes dinamicos
                 const xAxis = d3.axisBottom(x)
-                const yAxis = d3.axisLeft(y)
+                var yAxis = undefined
+
+                if (country === 'All Countries') {
+                    yAxis = d3.axisLeft(y).tickFormat((d) => `${d3.format('.2s')(d)}`)
+                } else {
+                    yAxis = d3.axisLeft(y).tickFormat((d) => `${f(d/100)}`)
+                }
 
                 xAxisGroup
                     .transition()
-                    .duration(2500)
+                    .duration(2900)
                     .call(xAxis)
 
                 yAxisGroup
                     .transition()
-                    .duration(2500)
+                    .duration(2900)
                     .call(yAxis)
             }
-
         }
     }
 
@@ -438,7 +447,19 @@ const load = async () => {
                 
                 // Calculamos el promedio dividiendo la suma de todos los valores del atributo 'Inflation' entre
                 // El total de registros (Quitamos los valores nulos ya que son considerados como 0 y estos no entran en el calculo de la suma)
-                const avgInflation = sumInflation / totalRegistros.length
+                
+                var avgInflation = 0
+                
+                if (country === 'All Countries'){
+
+                    avgInflation = sumInflation / (distinctCountry.length - 1)
+
+                } else {
+                    
+                    avgInflation = sumInflation / totalRegistros.length
+                }
+                
+                const f = d3.format(',.2%')
         
                 // Validamos si el promedio es mayor a cero pintamos el texto de verde y en caso contrario pintamos el texto de rojo
                 if (avgInflation < 0){
@@ -452,10 +473,16 @@ const load = async () => {
                 }
 
                 // Asignamos el valor a la tarjeta redondeando a dos decimales
-                valueCard3.text(avgInflation.toFixed(2) + "%")
+                valueCard3.text(f(avgInflation/100))
             }
         }   
 
+    }
+
+    // Función para asignar el rango de años a una tarjeta
+    const getYearRange = () =>{
+        valueCard1
+            .text(rangeInput.select('input.range-min').node().value + "-" + rangeInput.select('input.range-max').node().value)
     }
 
     // Función para asignar la categoria a una tarjeta
@@ -463,7 +490,7 @@ const load = async () => {
         valueCard2
             .text(category)
             .style('color', 'rgba(6,147,227,1)')
-            .style('font-size','25px')
+            .style('font-size','23px')
     }
 
     // Función para obtener la variación dependiendo los parametros y el valor máximo del año seleccionado
@@ -517,7 +544,8 @@ const load = async () => {
                     }
 
                     // Asignamos el valor a la tarjeta redondeando a dos decimales
-                    valueCard4.text(varLastYear.toFixed(2) + "%")
+                    const f = d3.format(',.2%')
+                    valueCard4.text(f(varLastYear/100))
                 }
 
             }
@@ -584,6 +612,7 @@ const load = async () => {
     getCategory(checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
     drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+    getYearRange()
 
     // Evento para cuando se genere un cambio en el elemento de selección de país
     selectCountry.on("change", (e) => {
@@ -659,6 +688,7 @@ const load = async () => {
         getAvgInflation(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
         getVarLastYear(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
         drawChartRect(selectCountry.node().value, checksCategory.select('div.form-check input.form-check-input[name="Country"]:checked').node().value)
+        getYearRange()
 
     })
 }
