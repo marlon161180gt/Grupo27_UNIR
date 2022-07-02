@@ -3,6 +3,9 @@
     text-align: center;
     border: 1px solid black;
     margin-left: 1%;
+    color:rgb(248, 248, 255);
+    padding: 0.5%;
+    background-color: rgba(6,147,227,1);    
 }
 
 .chartGroup {
@@ -26,14 +29,15 @@
     float: left;
     text-align: center;
     padding-top: 1%;
+    background-color: rgb(206, 215, 218);    
 }
 
 .dataCard {
-    padding-top: 3%;
-    font-size: x-large;
-    font-style: italic;
-
-}
+    padding-top: 2%;
+    font-size: 25px;
+    font-weight: bold;
+    font-style:oblique;
+    }
 
 .chartLayer {
     border:1px solid black;
@@ -42,8 +46,13 @@
 }
 
 .titleChart {
-    text-align: center;
-    padding-top: 1%;
+    font: 30px Arial;
+    font-weight: bold;
+    text-align: right;
+    vertical-align: top;
+    color:rgb(248, 248, 255);
+    padding: 0.5%;
+    background-color: rgba(6,147,227,1);
 }
 
 .chart {
@@ -72,9 +81,12 @@
 }
 
 .titleFilter {
+    font: 20px Arial;
     text-align: center;
+    color:rgb(248, 248, 255);
     padding: 5%;
     border: 1px solid black;
+    background-color: rgba(6,147,227,1);
 }
 
 .checksCategory {
