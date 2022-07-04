@@ -391,11 +391,8 @@ const load = async () => {
                 const xAxis = d3.axisBottom(x)
                 var yAxis = undefined
 
-                if (country === 'All Countries') {
-                    yAxis = d3.axisLeft(y).tickFormat((d) => `${d3.format('.2s')(d)}`)
-                } else {
-                    yAxis = d3.axisLeft(y).tickFormat((d) => `${f(d/100)}`)
-                }
+
+                yAxis = d3.axisLeft(y).tickFormat((d) => `${f(d/100)}`)
 
                 xAxisGroup
                     .transition()
@@ -482,7 +479,7 @@ const load = async () => {
     // Función para asignar el rango de años a una tarjeta
     const getYearRange = () =>{
         valueCard1
-            .text(rangeInput.select('input.range-min').node().value + "-" + rangeInput.select('input.range-max').node().value)
+            .text(rangeInput.select('input.range-min').node().value + " - " + rangeInput.select('input.range-max').node().value)
     }
 
     // Función para asignar la categoria a una tarjeta
